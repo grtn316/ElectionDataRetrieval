@@ -102,8 +102,8 @@ public:
         wxStaticText* maxHeapResultLabel = new wxStaticText(this, wxID_ANY, "0.96 s", wxPoint(180, 450), wxSize(40, 15), wxALIGN_RIGHT);
 
         /*EVENT HANDlERS*/
-        searchBtn->Bind(wxEVT_BUTTON, [this, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel](wxCommandEvent& event) {
-            OnSearchButtonClicked(event, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel);
+        searchBtn->Bind(wxEVT_BUTTON, [this, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel](wxCommandEvent& event) {
+            OnSearchButtonClicked(event, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel);
             });
     }
 
@@ -211,16 +211,23 @@ public:
 
     }
 
-    void OnSearchButtonClicked(wxCommandEvent& event, wxChoice* choice, wxGrid* grid, wxStaticBitmap* bitmap, wxStaticText* bTreeResultLabel, wxStaticText* maxHeapResultLabel) {
-        //// Get the current selection from the dropdown
+    void OnSearchButtonClicked(wxCommandEvent& event, wxChoice* choice, wxGrid* grid, wxStaticBitmap* bitmap, wxStaticText* bTreeResultLabel, wxStaticText* maxHeapResultLabel, wxStaticText* candidateLabel, wxStaticText* partyLabel) {
+        // Get the current selection from the dropdown
         wxString selection = choice->GetStringSelection();
         //int selection = choice->GetSelection();
 
-        //Update selected candidate image
-        UpdateImage(bitmap, selection.ToStdString());
-
         //Update Grid with selected candidate vote data
         UpdateGrid(grid, selection.ToStdString(), bTreeResultLabel, maxHeapResultLabel);
+
+        candidateLabel->SetLabel(selection.ToStdString());
+
+        // Access the first tuple in the vector for the supplied candidate
+        tuple<string, string, string, string, string> firstTuple = candidateData[selection.ToStdString()].at(0);
+
+        partyLabel->SetLabel(get<0>(firstTuple));
+
+        //Update selected candidate image
+        UpdateImage(bitmap, selection.ToStdString());
     }
 
 
