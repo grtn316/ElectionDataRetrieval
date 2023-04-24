@@ -15,41 +15,64 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="app.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Form1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CppCLR_WinFormsProject.cpp">
+    <ClCompile Include="ElectionUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AssemblyInfo.cpp">
+    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Form1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="app.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\election.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\bencarson.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\berniesanders.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\carlyfiorina.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\chrischristie.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\donaldtrump.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\hillaryclinton.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\jebbush.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\johnkasich.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\marcorubio.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\martino%27malley.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\mikehuckabee.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\nopreference.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\randpaul.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\ricksantorum.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\tedcruz.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\uncommitted.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
