@@ -44,7 +44,7 @@ public:
 
         wxStaticText* gridLabel = new wxStaticText(this, wxID_ANY, "Top 10 Counties by Votes", wxPoint(258, 120), wxSize(567, 33), wxALIGN_CENTER);
 
-        // Create the table with 5 columns and add some rows
+        // Create the table with 4 columns
         wxGrid* grid = new wxGrid(this, wxID_ANY, wxPoint(258, 150), wxSize(600, 279));
         grid->CreateGrid(10, 4);
         //table->SetColLabelValue(0, "Row Position");
@@ -52,13 +52,6 @@ public:
         grid->SetColLabelValue(1, "State");
         grid->SetColLabelValue(2, "Votes");
         grid->SetColLabelValue(3, "% of Votes");
-        //for (int i = 0; i < 10; i++) {
-        //  //  table->SetCellValue(i, 0, wxString::Format("%d", i + 1));
-        //    grid->SetCellValue(i, 0, "Tarrant");
-        //    grid->SetCellValue(i, 1, "Texas");
-        //    grid->SetCellValue(i, 2, "9945");
-        //    grid->SetCellValue(i, 3, "4.7");
-        //}
 
         //Adjust column width
         int tableWidth = grid->GetSize().GetWidth() - grid->GetRowLabelSize();
@@ -71,12 +64,12 @@ public:
         //table->AutoSizeColumns();
 
         
-        wxStaticText* candidateLabel = new wxStaticText(this, wxID_ANY, "Ben Carson", wxPoint(31, 130), wxSize(194, 15), wxALIGN_CENTER);
-        wxStaticText* partyLabel = new wxStaticText(this, wxID_ANY, "Republican", wxPoint(31, 150), wxSize(194, 15), wxALIGN_CENTER);
+        wxStaticText* candidateLabel = new wxStaticText(this, wxID_ANY, "", wxPoint(31, 130), wxSize(194, 15), wxALIGN_CENTER);
+        wxStaticText* partyLabel = new wxStaticText(this, wxID_ANY, "", wxPoint(31, 150), wxSize(194, 15), wxALIGN_CENTER);
         
 
         // Load and resize the image
-        wxString imagePath = wxT("images/bencarson.jpg");
+        wxString imagePath = wxT("images/uncommitted.jpg");
         wxImage image(imagePath, wxBITMAP_TYPE_JPEG);
         wxSize size(194, 211);
         wxImage resizedImage = image.Rescale(size.GetWidth(), size.GetHeight());
@@ -93,12 +86,12 @@ public:
         wxStaticText* bTreeResultLabel = new wxStaticText(this, wxID_ANY, "0.96 s", wxPoint(180, 430), wxSize(40, 15), wxALIGN_RIGHT);
         wxStaticText* maxHeapResultLabel = new wxStaticText(this, wxID_ANY, "0.96 s", wxPoint(180, 450), wxSize(40, 15), wxALIGN_RIGHT);
 
-        /*EVENT HANDlERS*/
+        /*EVENT HANDLERS*/
         searchBtn->Bind(wxEVT_BUTTON, [this, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel](wxCommandEvent& event) {
             OnSearchButtonClicked(event, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel);
             });
 
-        //Trigger initial load
+        //Trigger initial selection
         wxCommandEvent event(wxEVT_BUTTON, searchBtn->GetId());
         wxPostEvent(searchBtn, event);
     }
