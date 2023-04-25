@@ -33,24 +33,31 @@ Data will be unpivoted to match these columns plus converting the column heading
 ## Tools
 <b>Languages:</b> C++17
 
-<b>Tools / Frameworks:</b> Visual Studio 2022, C++/CLI (to develop Windows Forms), .Net Desktop Development, Justinmind (to create the wireframe/UI visual)
+<b>Tools / Frameworks:</b> Visual Studio 2019+, wxWidgets UI Framework, wxFormBuilder, Justinmind (to create the wireframe/UI visual)
 
 <b>Setup Steps:</b>
 
 - Step 1: Install Visual Studio 2022 Community Edition
-  - Step 1a: Enable the following options:
-        ![Install Options](./files/install_options.png)
-- Step 2: Enable the C++ WinForms extension
-  - Step 2a: From the top menu bar, select: Extensions > Manage Extensions
-  - Step 2b: From the manage extensions menu, select: Online > Visual Studio Marketplace > Templates > Visual C++ and then select the template shown here:
-    ![WinForms Extension](./files/extensions.png)
-  - Steb 2c: After extension has been selected, close visual studio to intiate update.
-- Step 3: Verify extension was installed successfully and all dependancies exist by test creating a new project of the type displayed here:
-    ![Example Project](./files/new_project.png)
+- Step 2: Download [wxWidget UI Framework](https://www.wxwidgets.org/downloads/)
+- Step 3: Extract the zip and open the project under the following direction `%extractedDir%\build\msw\wx_vc17.sln`
+- Step 4: Build this project
+- Step 5: Close the project and copy the extracted directory to a permanent location like `c:\`
+
 
 > **Note**
 >
-> If you are able to create and run an example project using this template then your environment is properly configured to work on this project.
+> When creating a new empty c++ project in Visual Studio, you will need to configure project settings.
+
+<b>Configure Project Settings:</b>
+
+Right click on your project and go to Properties and configure the following to your relative path:
+
+- C/C++ > Additional Include Directories
+![UI Mockup](./files/include_directories.png)
+- VC++ Directories > Library Directories
+![UI Mockup](./files/library_directories.png)
+- Linker > System > Sub System
+![UI Mockup](./files/sub_system.png)
 
 ## Visuals
 ![UI Mockup](./files/ui_mockup.png)
@@ -71,5 +78,10 @@ Max Heaps are Trees in which the nodes are sorted by their keys in descending or
 - <b>Xiya Zhou:</b> Define coding standards, Unit Testing, Max Heap Implementation
 
 ## References
-Creating a C++ Windows Form using Microsoft Visual Studio 2022
-https://www.youtube.com/watch?v=zv8DkkhBNR0
+wxWidgets & Visual Studio 2022 - Cross Platform Graphical User Interface c++, download build,compile: https://www.youtube.com/watch?v=1fZL13jIbFQ 
+
+https://docs.wxwidgets.org/3.2/page_samples.html
+
+https://docs.wxwidgets.org/3.2/group__group__class__ctrl.html
+
+https://github.com/wxFormBuilder/wxFormBuilder
