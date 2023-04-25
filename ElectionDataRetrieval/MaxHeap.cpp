@@ -2,15 +2,20 @@
 
 MaxHeap::Node::Node()
 {
-
+    
 }
 
 //creates a MaxHeap with a certain capacity
 MaxHeap::MaxHeap(int cap)
 {
     capacity = cap;
-    heap = new Node * [cap];
+    heap = new Node*[cap];
     size = 0;
+}
+
+MaxHeap::~MaxHeap()
+{
+    delete[] heap;
 }
 
 //gets left child index
@@ -42,18 +47,18 @@ void MaxHeap::swap(int a, int b)
 //inserts the county with all its variables into the heap, swaps entries to leave max element on top
 void MaxHeap::insert(string c, string s, int num, float p)
 {
-    if (size == 0)
+    if(size == 0)
     {
         heap[0] = new Node(c, s, num, p);
         ++size;
     }
-    else if (size > 0)
+    else if(size > 0)
     {
         heap[size] = new Node(c, s, num, p);
         int kid = size;
         ++size;
         int par = parent(kid);
-        while (par >= 0 && heap[kid]->votes > heap[par]->votes)
+        while(par >= 0 && heap[kid]->votes > heap[par]->votes)
         {
             swap(kid, par);
             kid = par;
@@ -89,16 +94,16 @@ float MaxHeap::getMaxPercent()
 //removes the max element in the heap, then percolates down until the nodes are where they need to be
 void MaxHeap::popMax()
 {
-    if (size == 0)
+    if(size == 0)
     {
         return;
     }
-    else if (size < 2)
+    else if(size < 2)
     {
         --size;
         return;
     }
-    else if (size >= 2)
+    else if(size >= 2)
     {
         --size;
         heap[0] = heap[size];
@@ -106,19 +111,19 @@ void MaxHeap::popMax()
         int l = left(par);
         int r = right(par);
         int max = par;
-        while (l < size && r < size)
+        while(l < size && r < size)
         {
-            if (heap[l]->votes > heap[max]->votes)
+            if(heap[l]->votes > heap[max]->votes)
             {
                 max = l;
             }
-            if (heap[r]->votes > heap[max]->votes)
+            if(heap[r]->votes > heap[max]->votes)
             {
                 max = r;
             }
-            if (max != par)
+            if(max != par)
             {
-                swap(max, par);
+                swap(max,par);
                 par = max;
                 l = left(par);
                 r = right(par);
@@ -135,7 +140,7 @@ void MaxHeap::popMax()
 //Just a helper function for testing, prints out the name and votes in order
 void MaxHeap::printHeap()
 {
-    for (int i = 0; i < size; ++i)
+    for(int i = 0; i < size; ++i)
     {
         cout << heap[i]->county << " " << heap[i]->state << " " << heap[i]->votes << endl;
     }
