@@ -29,14 +29,7 @@ public:
         candidateData = util.getCandidateData();
 
         // Initialize all image handlers
-        wxInitAllImageHandlers();
-
-        // Create the dropdown list with 16 values
-        /*wxArrayString choices;
-        choices.Add("Ben Carson");
-        choices.Add("Hillary Clinton");
-        choices.Add("Donald Trump");*/
-        
+        wxInitAllImageHandlers();       
 
         wxStaticText* dropDownLabel = new wxStaticText(this, wxID_ANY, "Search by Candidate Name:", wxPoint(281, 15), wxSize(257,33), wxALIGN_CENTER);
 
@@ -45,30 +38,27 @@ public:
         UpdateChoiceList(dropDown, candidates);
 
         dropDown->SetSelection(0);
+
         // Create the search button
         wxButton* searchBtn = new wxButton(this, wxID_ANY, "Search", wxPoint(572, 43), wxSize(110, 39));
-
-        /*searchBtn->Bind(wxEVT_BUTTON, [this, dropDown](wxCommandEvent& event) {
-            OnSearchButtonClicked(event, dropDown);
-            });*/
 
         wxStaticText* gridLabel = new wxStaticText(this, wxID_ANY, "Top 10 Counties by Votes", wxPoint(258, 120), wxSize(567, 33), wxALIGN_CENTER);
 
         // Create the table with 5 columns and add some rows
-        wxGrid* grid = new wxGrid(this, wxID_ANY, wxPoint(258, 150), wxSize(567, 279));
+        wxGrid* grid = new wxGrid(this, wxID_ANY, wxPoint(258, 150), wxSize(600, 279));
         grid->CreateGrid(10, 4);
         //table->SetColLabelValue(0, "Row Position");
         grid->SetColLabelValue(0, "County");
         grid->SetColLabelValue(1, "State");
         grid->SetColLabelValue(2, "Votes");
         grid->SetColLabelValue(3, "% of Votes");
-        for (int i = 0; i < 10; i++) {
-          //  table->SetCellValue(i, 0, wxString::Format("%d", i + 1));
-            grid->SetCellValue(i, 0, "Tarrant");
-            grid->SetCellValue(i, 1, "Texas");
-            grid->SetCellValue(i, 2, "9945");
-            grid->SetCellValue(i, 3, "4.7");
-        }
+        //for (int i = 0; i < 10; i++) {
+        //  //  table->SetCellValue(i, 0, wxString::Format("%d", i + 1));
+        //    grid->SetCellValue(i, 0, "Tarrant");
+        //    grid->SetCellValue(i, 1, "Texas");
+        //    grid->SetCellValue(i, 2, "9945");
+        //    grid->SetCellValue(i, 3, "4.7");
+        //}
 
         //Adjust column width
         int tableWidth = grid->GetSize().GetWidth() - grid->GetRowLabelSize();
@@ -107,6 +97,10 @@ public:
         searchBtn->Bind(wxEVT_BUTTON, [this, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel](wxCommandEvent& event) {
             OnSearchButtonClicked(event, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel);
             });
+
+        //Trigger initial load
+        wxCommandEvent event(wxEVT_BUTTON, searchBtn->GetId());
+        wxPostEvent(searchBtn, event);
     }
 
     void UpdateChoiceList(wxChoice* choice, const std::vector<std::string>& items) {
@@ -222,8 +216,9 @@ public:
 
         //Update selected candidate image
         UpdateImage(bitmap, selection.ToStdString());
-    }
 
+        grid->SetColLabelValue(3, "% of " + get<0>(firstTuple) +" Votes");
+    }
 
 };
 
