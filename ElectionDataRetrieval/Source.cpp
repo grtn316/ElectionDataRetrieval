@@ -135,7 +135,7 @@ public:
         }
 
         vector<tuple<string, string, int, float>> gridData = b.TraverseTopTen();
-
+       
         return gridData;
     }
 
