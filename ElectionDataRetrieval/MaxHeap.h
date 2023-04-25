@@ -15,7 +15,7 @@ class MaxHeap
         Node();
         Node(string c, string s, int num, float p) : county(c), state(s), votes(num), percent(p) {}
     };
-    Node** heap;
+    Node* heap;
     int capacity;
     int size;
     
