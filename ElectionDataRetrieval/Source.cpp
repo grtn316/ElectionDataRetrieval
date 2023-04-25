@@ -6,6 +6,8 @@
 #include <chrono>
 #include <thread>
 #include "ElectionUtil.cpp"
+#include "BTree.h"
+#include "MaxHeap.h"
 
 using namespace std;
 
@@ -133,48 +135,40 @@ public:
         bitmap->SetBitmap(resizedImage);
     }
 
-    vector<tuple<string, string, int, float>> bTreeSearch() {
+    vector<tuple<string, string, int, float>> bTreeSearch(string candidateName) {
         //Election Data unordered map: candidateData
         //Candidate list: candidates
 
-        vector<tuple<string, string, int, float>> gridData;
+        vector <tuple <string, string, string, string, string>> data = candidateData[candidateName];
+        BTree b(3);
+        for (int i = 0; i < data.size(); i++)
+        {
+            // insert(county, state, (int)votes, (float)percVotes)
+            b.Insert(get<1>(data[i]), get<2>(data[i]), stoi(get<3>(data[i])), stof(get<4>(data[i])));
+        }
 
-        /*EXAMPLE DATA*/
-        gridData.push_back(std::make_tuple("County A", "State A", 100, 75.0f));
-        gridData.push_back(std::make_tuple("County A", "State B", 200, 50.0f));
-        gridData.push_back(std::make_tuple("County A", "State C", 300, 25.0f));
-        gridData.push_back(std::make_tuple("County A", "State D", 400, 12.5f));
-        gridData.push_back(std::make_tuple("County A", "State E", 500, 6.25f));
-        gridData.push_back(std::make_tuple("County A", "State F", 600, 3.125f));
-        gridData.push_back(std::make_tuple("County A", "State G", 700, 1.5625f));
-        gridData.push_back(std::make_tuple("County A", "State H", 800, 0.78125f));
-        gridData.push_back(std::make_tuple("County A", "State I", 900, 0.390625f));
-        gridData.push_back(std::make_tuple("County A", "State J", 1000, 0.1953125f));
-
-        this_thread::sleep_for(chrono::milliseconds(700));
+        vector<tuple<string, string, int, float>> gridData = b.TraverseTopTen();
 
         return gridData;
     }
 
-    vector<tuple<string, string, int, float>> maxHeapSearch() {
+    vector<tuple<string, string, int, float>> maxHeapSearch(string candidateName) {
         //Election Data unordered map: candidateData
         //Candidate list: candidates
 
         vector<tuple<string, string, int, float>> gridData;
 
-        /*EXAMPLE DATA*/
-        gridData.push_back(std::make_tuple("County A", "State A", 100, 75.0f));
-        gridData.push_back(std::make_tuple("County A", "State B", 200, 50.0f));
-        gridData.push_back(std::make_tuple("County A", "State C", 300, 25.0f));
-        gridData.push_back(std::make_tuple("County A", "State D", 400, 12.5f));
-        gridData.push_back(std::make_tuple("County A", "State E", 500, 6.25f));
-        gridData.push_back(std::make_tuple("County A", "State F", 600, 3.125f));
-        gridData.push_back(std::make_tuple("County A", "State G", 700, 1.5625f));
-        gridData.push_back(std::make_tuple("County A", "State H", 800, 0.78125f));
-        gridData.push_back(std::make_tuple("County A", "State I", 900, 0.390625f));
-        gridData.push_back(std::make_tuple("County A", "State J", 1000, 0.1953125f));
-
-        this_thread::sleep_for(chrono::milliseconds(500));
+        vector<tuple <string, string, string, string, string>> data = candidateData[candidateName];
+        MaxHeap mh = MaxHeap(5000);
+        for (tuple <string, string, string, string, string> t : data)
+        {
+            mh.insert(get<1>(t), get<2>(t), stoi(get<3>(t)), stof(get<4>(t)));
+        }
+        for (int i = 0; i < 10; ++i)
+        {
+            gridData.push_back(make_tuple(mh.getMaxCounty(), mh.getMaxState(), mh.getMaxVotes(), mh.getMaxPercent()));
+            mh.popMax();
+        }
 
         return gridData;
     }
@@ -184,13 +178,13 @@ public:
         //Go fetch data to display in table
 
         auto start = std::chrono::high_resolution_clock::now();
-        gridData = bTreeSearch(); // Replace with the name of the function you want to time
+        gridData = bTreeSearch(candidateName); // Replace with the name of the function you want to time
         auto end = std::chrono::high_resolution_clock::now();
 
         auto bTreeduration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
 
         start = std::chrono::high_resolution_clock::now();
-        gridData = maxHeapSearch(); // Replace with the name of the function you want to time
+        gridData = maxHeapSearch(candidateName); // Replace with the name of the function you want to time
         end = std::chrono::high_resolution_clock::now();
 
         auto maxHeapduration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
