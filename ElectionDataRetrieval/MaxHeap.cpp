@@ -9,7 +9,7 @@ MaxHeap::Node::Node()
 MaxHeap::MaxHeap(int cap)
 {
     capacity = cap;
-    heap = new Node*[cap];
+    heap = new Node[cap];
     size = 0;
 }
 
@@ -39,7 +39,7 @@ int MaxHeap::parent(int i)
 //swaps 2 elements
 void MaxHeap::swap(int a, int b)
 {
-    Node* temp = heap[a];
+    Node temp = heap[a];
     heap[a] = heap[b];
     heap[b] = temp;
 }
@@ -49,16 +49,16 @@ void MaxHeap::insert(string c, string s, int num, float p)
 {
     if(size == 0)
     {
-        heap[0] = new Node(c, s, num, p);
+        heap[0] = Node(c, s, num, p);
         ++size;
     }
     else if(size > 0)
     {
-        heap[size] = new Node(c, s, num, p);
+        heap[size] = Node(c, s, num, p);
         int kid = size;
         ++size;
         int par = parent(kid);
-        while(par >= 0 && heap[kid]->votes > heap[par]->votes)
+        while(par >= 0 && heap[kid].votes > heap[par].votes)
         {
             swap(kid, par);
             kid = par;
@@ -70,25 +70,25 @@ void MaxHeap::insert(string c, string s, int num, float p)
 //returns the county of the max node in the heap
 string MaxHeap::getMaxCounty()
 {
-    return heap[0]->county;
+    return heap[0].county;
 }
 
 //returns the state of the max node in the heap
 string MaxHeap::getMaxState()
 {
-    return heap[0]->state;
+    return heap[0].state;
 }
 
 //returns the number of votes for the max node in the heap
 int MaxHeap::getMaxVotes()
 {
-    return heap[0]->votes;
+    return heap[0].votes;
 }
 
 //returns the percent of votes for the max node in the heap
 float MaxHeap::getMaxPercent()
 {
-    return heap[0]->percent;
+    return heap[0].percent;
 }
 
 //removes the max element in the heap, then percolates down until the nodes are where they need to be
@@ -113,11 +113,11 @@ void MaxHeap::popMax()
         int max = par;
         while(l < size && r < size)
         {
-            if(heap[l]->votes > heap[max]->votes)
+            if(heap[l].votes > heap[max].votes)
             {
                 max = l;
             }
-            if(heap[r]->votes > heap[max]->votes)
+            if(heap[r].votes > heap[max].votes)
             {
                 max = r;
             }
@@ -142,6 +142,6 @@ void MaxHeap::printHeap()
 {
     for(int i = 0; i < size; ++i)
     {
-        cout << heap[i]->county << " " << heap[i]->state << " " << heap[i]->votes << endl;
+        cout << heap[i].county << " " << heap[i].state << " " << heap[i].votes << endl;
     }
 }
