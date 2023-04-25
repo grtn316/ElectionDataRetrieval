@@ -1,5 +1,5 @@
-#pragma once
 #include <iostream>
+#include <queue>
 
 using namespace std;
 
@@ -18,9 +18,10 @@ class MaxHeap
     Node** heap;
     int capacity;
     int size;
-
-public:
+    
+    public:
     MaxHeap(int cap);
+    ~MaxHeap();
     int left(int i);
     int right(int i);
     int parent(int i);
