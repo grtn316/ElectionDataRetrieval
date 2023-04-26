@@ -7,7 +7,7 @@ BTree::Node::Node(int _deg)
     this->leaf = true;
     this->deg = _deg;
     this->keys = new Key * [2 * deg - 1];
-    this->child = new Node * [2 * deg - 1];
+    this->child = new Node * [2 * deg];
     this->n = 0;
 }
 
@@ -92,12 +92,10 @@ void BTree::Node::splitChildNode(int i, Node* node)
     // new node will store #degrees -1 keys from the node to split
     newNode->n = deg - 1;
 
-    int j = 0;
-    for (j; j < deg - 1; j++)
+    for (int j = 0; j < deg - 1; j++)
     {
         newNode->keys[j] = node->keys[j + deg];
     }
-    node->keys[j + deg] = nullptr; //can clear the unused pointer
 
     if (node->leaf == false)
     {
