@@ -8,6 +8,7 @@
 #include "ElectionUtil.cpp"
 #include "BTree.h"
 #include "MaxHeap.h"
+#include <iomanip>
 
 using namespace std;
 
@@ -17,6 +18,7 @@ class MyFrame : public wxFrame
 private: 
     vector<string> candidates;
     unordered_map<string, vector<tuple <string, string, string, string, string>>> candidateData; //name > party, county, state, numVotes, percVotes
+    bool stopLoading;
 public:
     MyFrame() : wxFrame(nullptr, wxID_ANY, "Election Data Retrieval", wxPoint(30, 30), wxSize(928, 569))
     {
@@ -31,23 +33,64 @@ public:
         // Initialize all image handlers
         wxInitAllImageHandlers();       
 
-        wxStaticText* dropDownLabel = new wxStaticText(this, wxID_ANY, "Search by Candidate Name:", wxPoint(281, 15), wxSize(257,33), wxALIGN_CENTER);
+        wxStaticText* dropDownLabel = new wxStaticText(this, wxID_ANY, "Search by Candidate Name:", wxPoint(300, 15), wxSize(200,33), wxALIGN_CENTER);
 
-        wxChoice* dropDown = new wxChoice(this, wxID_ANY, wxPoint(281, 46), wxSize(257, 33));
+        //Make Label Bold
+        wxFont font = dropDownLabel->GetFont();
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+        font.SetPointSize(10);
+        dropDownLabel->SetFont(font);
+
+        wxChoice* dropDown = new wxChoice(this, wxID_ANY, wxPoint(300, 60), wxSize(200, 33));
 
         UpdateChoiceList(dropDown, candidates);
 
         dropDown->SetSelection(0);
 
+        wxString choices[] = { "B Tree", "Max Heap" };
+        wxRadioBox* sourceRBtn = new wxRadioBox(this, wxID_ANY, "Display Source", wxPoint(520, 35), wxDefaultSize, WXSIZEOF(choices), choices, 1, wxRA_SPECIFY_ROWS);
+        
+
         // Create the search button
-        wxButton* searchBtn = new wxButton(this, wxID_ANY, "Search", wxPoint(572, 43), wxSize(110, 39));
+        wxButton* searchBtn = new wxButton(this, wxID_ANY, "Search", wxPoint(700, 60), wxSize(110, 25));
 
         wxStaticText* gridLabel = new wxStaticText(this, wxID_ANY, "Top 10 Counties by Votes", wxPoint(258, 120), wxSize(567, 33), wxALIGN_CENTER);
+
+        wxStaticText* loadingLabel = new wxStaticText(this, wxID_ANY, "Loading...", wxPoint(790, 130), wxSize(50, 33), wxALIGN_CENTER);
+        
+        loadingLabel->SetForegroundColour(wxColour(255, 0, 0));
+        loadingLabel->Hide();
+
+        //Make Label Bold
+        font = gridLabel->GetFont();
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+        font.SetPointSize(10);
+        gridLabel->SetFont(font);
+
 
         // Create the table with 4 columns
         wxGrid* grid = new wxGrid(this, wxID_ANY, wxPoint(258, 150), wxSize(600, 279));
         grid->CreateGrid(10, 4);
-        //table->SetColLabelValue(0, "Row Position");
+        
+        //Set column attributes
+        wxGridCellAttr* colAttr0 = new wxGridCellAttr();
+        wxGridCellAttr* colAttr1 = new wxGridCellAttr();
+        wxGridCellAttr* colAttr2 = new wxGridCellAttr();
+        wxGridCellAttr* colAttr3 = new wxGridCellAttr();
+        
+        colAttr0->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+        colAttr1->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+        colAttr2->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+        colAttr3->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
+        
+        
+        //Apply column attributes
+        grid->SetColAttr(0, colAttr0);
+        grid->SetColAttr(1, colAttr1);
+        grid->SetColAttr(2, colAttr2);
+        grid->SetColAttr(3, colAttr3);
+
+        //Set column labels
         grid->SetColLabelValue(0, "County");
         grid->SetColLabelValue(1, "State");
         grid->SetColLabelValue(2, "Votes");
@@ -60,12 +103,16 @@ public:
         for (int i = 0; i < numCols; i++) {
             grid->SetColSize(i, colWidth);
         }
-
-        //table->AutoSizeColumns();
-
         
-        wxStaticText* candidateLabel = new wxStaticText(this, wxID_ANY, "", wxPoint(31, 130), wxSize(194, 15), wxALIGN_CENTER);
-        wxStaticText* partyLabel = new wxStaticText(this, wxID_ANY, "", wxPoint(31, 150), wxSize(194, 15), wxALIGN_CENTER);
+        wxStaticText* candidateLabel = new wxStaticText(this, wxID_ANY, "", wxPoint(31, 120), wxSize(194, 15), wxALIGN_CENTER);
+        
+        //Make Label Bold
+        font = candidateLabel->GetFont();
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+        font.SetPointSize(10);
+        candidateLabel->SetFont(font);
+
+        wxStaticText* partyLabel = new wxStaticText(this, wxID_ANY, "", wxPoint(31, 140), wxSize(194, 15), wxALIGN_CENTER);
         
 
         // Load and resize the image
@@ -78,17 +125,23 @@ public:
         wxBitmap bmp(resizedImage);
         wxStaticBitmap* candidatePicture = new wxStaticBitmap(this, wxID_ANY, bmp, wxPoint(31, 170), size);
 
-        wxStaticText* retrievalLabel = new wxStaticText(this, wxID_ANY, "Time to Retrieve Data", wxPoint(31, 400), wxSize(194, 15), wxALIGN_CENTER);
-        
-        wxStaticText* bTreeLabel = new wxStaticText(this, wxID_ANY, "B Tree:", wxPoint(31, 430), wxSize(100, 15), wxALIGN_LEFT);
-        wxStaticText* maxHeapLabel = new wxStaticText(this, wxID_ANY, "Max Heap:", wxPoint(31, 450), wxSize(100, 15), wxALIGN_LEFT);
+        wxStaticText* retrievalLabel = new wxStaticText(this, wxID_ANY, "Processing Time", wxPoint(31, 400), wxSize(194, 15), wxALIGN_CENTER);
 
-        wxStaticText* bTreeResultLabel = new wxStaticText(this, wxID_ANY, "0.96 s", wxPoint(180, 430), wxSize(40, 15), wxALIGN_RIGHT);
-        wxStaticText* maxHeapResultLabel = new wxStaticText(this, wxID_ANY, "0.96 s", wxPoint(180, 450), wxSize(40, 15), wxALIGN_RIGHT);
+        //Make Label Bold
+        font = retrievalLabel->GetFont();
+        font.SetWeight(wxFONTWEIGHT_BOLD);
+        font.SetPointSize(10);
+        retrievalLabel->SetFont(font);
+        
+        wxStaticText* bTreeLabel = new wxStaticText(this, wxID_ANY, "B Tree:", wxPoint(66, 430), wxSize(100, 15), wxALIGN_LEFT);
+        wxStaticText* maxHeapLabel = new wxStaticText(this, wxID_ANY, "Max Heap:", wxPoint(66, 450), wxSize(100, 15), wxALIGN_LEFT);
+
+        wxStaticText* bTreeResultLabel = new wxStaticText(this, wxID_ANY, "0.96s", wxPoint(150, 430), wxSize(40, 15), wxALIGN_RIGHT);
+        wxStaticText* maxHeapResultLabel = new wxStaticText(this, wxID_ANY, "0.96s", wxPoint(150, 450), wxSize(40, 15), wxALIGN_RIGHT);
 
         /*EVENT HANDLERS*/
-        searchBtn->Bind(wxEVT_BUTTON, [this, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel](wxCommandEvent& event) {
-            OnSearchButtonClicked(event, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel);
+        searchBtn->Bind(wxEVT_BUTTON, [this, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel, sourceRBtn, loadingLabel](wxCommandEvent& event) {
+            OnSearchButtonClicked(event, dropDown, grid, candidatePicture, bTreeResultLabel, maxHeapResultLabel, candidateLabel, partyLabel, sourceRBtn, loadingLabel);
             });
 
         //Trigger initial selection
@@ -160,45 +213,83 @@ public:
         return gridData;
     }
 
-    void UpdateGrid(wxGrid* grid, string candidateName, wxStaticText* bTreeResultLabel, wxStaticText* maxHeapResultLabel) {
-        vector<tuple<string, string, int, float>> gridData;
+    void UpdateGrid(wxGrid* grid, string candidateName, wxStaticText* bTreeResultLabel, wxStaticText* maxHeapResultLabel, wxRadioBox* sourceRBtn) {
+        vector<tuple<string, string, int, float>> bTreeGridData;
+        vector<tuple<string, string, int, float>> maxHeapGridData;
         //Go fetch data to display in table
+        //Get value for Display Source
+        int selectedSource = sourceRBtn->GetSelection();
 
         auto start = std::chrono::high_resolution_clock::now();
-        gridData = bTreeSearch(candidateName); // Replace with the name of the function you want to time
+        bTreeGridData = bTreeSearch(candidateName); // Replace with the name of the function you want to time
         auto end = std::chrono::high_resolution_clock::now();
 
-        auto bTreeduration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
+        double bTreeduration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
 
         start = std::chrono::high_resolution_clock::now();
-        gridData = maxHeapSearch(candidateName); // Replace with the name of the function you want to time
+        maxHeapGridData = maxHeapSearch(candidateName); // Replace with the name of the function you want to time
         end = std::chrono::high_resolution_clock::now();
 
-        auto maxHeapduration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
+        double maxHeapduration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
 
+        stringstream ss;
+        ss << fixed << setprecision(2) << maxHeapduration;
+        string maxHeapdurationString = ss.str() + "s"; //converts to 2 decimal places
+
+        ss = stringstream();
+        ss << fixed << setprecision(2) << bTreeduration;
+        string bTreedurationString = ss.str() + "s"; //converts to 2 decimal places
+
+        string percVotesString;
         //Update grid
-        grid->ClearGrid();
+        
         for (int i = 0; i < 10; i++) {
-            tuple<string, string, int, float> tup = gridData[i];
+            tuple<string, string, int, float> tup;
+
+            //Display based off of radio button selection
+            if (selectedSource == 0) {
+                tup = bTreeGridData[i];
+            }
+            else {
+                tup = maxHeapGridData[i];
+            }
+            
 
             grid->SetCellValue(i, 0, get<0>(tup));
             grid->SetCellValue(i, 1, get<1>(tup));
             grid->SetCellValue(i, 2, to_string(get<2>(tup)));
-            grid->SetCellValue(i, 3, to_string(get<3>(tup)));
+
+            ss = stringstream();
+            ss << fixed << setprecision(2) << get<3>(tup);
+            percVotesString = ss.str(); //converts to 2 decimal places
+            grid->SetCellValue(i, 3, percVotesString);
         }
 
-        bTreeResultLabel->SetLabel(std::to_string(std::stod(to_string(bTreeduration).substr(0, to_string(bTreeduration).find(".") + 5))) + " s"); //converts to 4 decimal places
-        maxHeapResultLabel->SetLabel(std::to_string(std::stod(to_string(maxHeapduration).substr(0, to_string(maxHeapduration).find(".") + 5))) + " s"); //converts to 4 decimal places
+        
+
+        bTreeResultLabel->SetLabel(bTreedurationString);
+        maxHeapResultLabel->SetLabel(maxHeapdurationString);
 
     }
 
-    void OnSearchButtonClicked(wxCommandEvent& event, wxChoice* choice, wxGrid* grid, wxStaticBitmap* bitmap, wxStaticText* bTreeResultLabel, wxStaticText* maxHeapResultLabel, wxStaticText* candidateLabel, wxStaticText* partyLabel) {
+    void OnSearchButtonClicked(wxCommandEvent& event, wxChoice* choice, wxGrid* grid, wxStaticBitmap* bitmap, wxStaticText* bTreeResultLabel, wxStaticText* maxHeapResultLabel, wxStaticText* candidateLabel, wxStaticText* partyLabel, wxRadioBox* sourceRBtn, wxStaticText* loadingLabel) {
         // Get the current selection from the dropdown
         wxString selection = choice->GetStringSelection();
         //int selection = choice->GetSelection();
+        
+        //Clear the grid so the user sees a change
+        grid->ClearGrid();
+
+        //trigger loading indicator
+        stopLoading = false;
+        std::thread testThread(&MyFrame::LoadIndicator, this, std::ref(*loadingLabel));
 
         //Update Grid with selected candidate vote data
-        UpdateGrid(grid, selection.ToStdString(), bTreeResultLabel, maxHeapResultLabel);
+        UpdateGrid(grid, selection.ToStdString(), bTreeResultLabel, maxHeapResultLabel, sourceRBtn);
+        
+        //kill non blocking thread for indicator
+        stopLoading = true;
+        testThread.detach();
 
         candidateLabel->SetLabel(selection.ToStdString());
 
@@ -211,6 +302,28 @@ public:
         UpdateImage(bitmap, selection.ToStdString());
 
         grid->SetColLabelValue(3, "% of " + get<0>(firstTuple) +" Votes");
+    }
+
+    void LoadIndicator(wxStaticText& loadingLabel) {
+        //loop through the indicator 3 times
+        //for(int x = 0; x < 100; x++) {
+        while(!stopLoading){
+            
+            loadingLabel.Show();
+            std::this_thread::sleep_for(std::chrono::milliseconds(75));
+            loadingLabel.Hide();
+            std::this_thread::sleep_for(std::chrono::milliseconds(75));
+
+        }
+
+        for (int x = 0; x < 1; x++) {
+
+            loadingLabel.Show();
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            loadingLabel.Hide();
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+        }
     }
 
 };
